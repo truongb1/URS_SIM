@@ -5,6 +5,13 @@ uint8_t buf[8] = { 0 }; //Keyboard report buffer
 #define NEUTRAL 6 //Input pin for neutral
 #define DRIVE 7 //Input pin for drive
 
+#define RESET 8 //Input pin for reset button
+
+// Pins for the RGB LED
+#define RED A0
+#define GREEN A1
+#define BLUE A2
+
 // May need to add more if we are implementing more states
 
 // Depending on how the shifter sends signals, or if we need to map more buttons, may need to declare more input pins
@@ -31,13 +38,27 @@ void setup() {
   pinMode(REVERSE, INPUT);
   pinMode(NEUTRAL, INPUT);
   pinMode(DRIVE, INPUT);
+  
+  pinMode(RESET, INPUT);
+
+  //Set pinmode of output RGB pins
+  
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
 
 }
 
 void loop() {
 
   // Set the target state (THESE HAVE TO BE IN DESCENDING ORDER)
-  if(digitalRead(DRIVE) == HIGH) { // If the shifter is set to drive
+  if(digitalRead(RESET) == HIGH) { // If the reset button is pressed, reset the sim and the state variables
+    buf[2] = 21;
+    Serial.write(buf, 8);
+    releaseKey();
+    state = neutralState;
+    currentState = neutralState;
+  } else if(digitalRead(DRIVE) == HIGH) { // If the shifter is set to drive
     state = driveState;
   } else if(digitalRead(NEUTRAL) == HIGH) { // If the shifter is set to neutral
     state = neutralState;
@@ -61,6 +82,24 @@ void loop() {
     Serial.write(buf, 8);
     releaseKey();
     currentState--;
+  }
+
+  if(currentState == parkState) {
+    analogWrite(RED, 0);
+    analogWrite(GREEN, 0);
+    analogWrite(BLUE, 255);
+  } else if(currentState == reverseState) {
+    analogWrite(RED, 255);
+    analogWrite(GREEN, 0);
+    analogWrite(BLUE, 0);
+  } else if(currentState == neutralState) {
+    analogWrite(RED, 255);
+    analogWrite(GREEN, 255);
+    analogWrite(BLUE, 255);
+  } else if(currentState == driveState) {
+    analogWrite(RED, 0);
+    analogWrite(GREEN, 255);
+    analogWrite(BLUE, 0);
   }
 
 }
