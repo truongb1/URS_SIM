@@ -25,6 +25,8 @@ int neutralState = 3*scale;
 int reverseState = 2*scale;
 int parkState = 1*scale;
 
+int resetState = 17; // To ensure reset only gets sent once, uses the same state mechanic as the shift state
+
 int state = neutralState; // Target state read from input
 int currentState = neutralState; // What the vehicle is currently set to
 
@@ -52,12 +54,8 @@ void setup() {
 void loop() {
 
   // Set the target state (THESE HAVE TO BE IN DESCENDING ORDER)
-  if(digitalRead(RESET) == HIGH) { // If the reset button is pressed, reset the sim and the state variables
-    buf[2] = 21;
-    Serial.write(buf, 8);
-    releaseKey();
-    state = neutralState;
-    currentState = neutralState;
+  if(digitalRead(RESET) == HIGH) { // If the reset button is pressed
+    state = resetState;
   } else if(digitalRead(DRIVE) == HIGH) { // If the shifter is set to drive
     state = driveState;
   } else if(digitalRead(NEUTRAL) == HIGH) { // If the shifter is set to neutral
@@ -68,9 +66,18 @@ void loop() {
     state = parkState;
   }
 
+  // If the reset button is pressed, reset both the sim and the state variables
+  if (state == resetState) {
+    buf[2] = 21; // Send an r in keycode representation
+    Serial.write(buf, 8);
+    releaseKey();
+    state = neutralState;
+    currentState = neutralState;
+  }
+
   // If the current state is a lower gear than the target gear, go up one gear
   if (state > currentState) {
-    buf[2] = 27;
+    buf[2] = 27; // Send an x in keycode representation
     Serial.write(buf, 8);
     releaseKey();
     currentState++;
@@ -78,25 +85,26 @@ void loop() {
 
   // If the current state is a higher gear than the target gear, go down a gear
   if (state < currentState) {
-    buf[2] = 29;
+    buf[2] = 29; // Send a z in keycode representation
     Serial.write(buf, 8);
     releaseKey();
     currentState--;
   }
 
-  if(currentState == parkState) {
+  // Change LED color based on current state
+  if(currentState == parkState) { // Blue means park
     analogWrite(RED, 0);
     analogWrite(GREEN, 0);
     analogWrite(BLUE, 255);
-  } else if(currentState == reverseState) {
+  } else if(currentState == reverseState) { // Red means reverse
     analogWrite(RED, 255);
     analogWrite(GREEN, 0);
     analogWrite(BLUE, 0);
-  } else if(currentState == neutralState) {
+  } else if(currentState == neutralState) { // White means neutral
     analogWrite(RED, 255);
     analogWrite(GREEN, 255);
     analogWrite(BLUE, 255);
-  } else if(currentState == driveState) {
+  } else if(currentState == driveState) { // Green means drive
     analogWrite(RED, 0);
     analogWrite(GREEN, 255);
     analogWrite(BLUE, 0);
