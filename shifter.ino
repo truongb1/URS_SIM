@@ -27,8 +27,8 @@ int parkState = 1*scale;
 
 int resetState = 17; // To ensure reset only gets sent once, uses the same state mechanic as the shift state
 
-int state = neutralState; // Target state read from input
-int currentState = neutralState; // What the vehicle is currently set to
+int state = parkState; // Target state read from input
+int currentState = state; // What the vehicle is currently set to
 
 void setup() {
 
@@ -71,8 +71,8 @@ void loop() {
     buf[2] = 21; // Send an r in keycode representation
     Serial.write(buf, 8);
     releaseKey();
-    state = neutralState;
-    currentState = neutralState;
+    state = parkState;
+    currentState = state;
   }
 
   // If the current state is a lower gear than the target gear, go up one gear
