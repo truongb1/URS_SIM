@@ -9,4 +9,8 @@ Parking Brake ON light (BOOL  0 or 1)<br>
 ABS Active Light (BOOL 0 or 1)<br>
 Traction Control Active Light (BOOL 0 or 1)<br>
 Tire Pressure Warning Light  (BOOL 0 or 1)<br>
-Check Engine Light  (BOOL 0 or 1)<br>
+Check Engine Light  (BOOL 0 or 1)<be>
+
+-----Custom serial devices SIMHUB-----<br>
+NCal Formula example(copy + paste):<br>
+'Data='+[SpeedMph]+':'+round([Rpms], 2)+':'+[OilTemperature]+'\n'<br>
