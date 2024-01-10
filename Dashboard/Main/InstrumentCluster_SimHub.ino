@@ -11,8 +11,8 @@
 //______\_/_____________\_/_______
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // SIMHUB Custom serial device binding must be set
-// NCalc formula: 'Telem:'+[Rpms]+':'+[SpeedMph]+':'+[OilTemperature]+':'+[Gear]+':'+[TurnIndicatorLeft]+':'+[TurnIndicatorRight]+':'+[Handbrake]+':'+[ABSActive]+':'+[CarDamagesMax]
-// example serial output from Simhub to Arduino (without the parenthesis): "Telem:734:0:180:N:0:0:100:0:0"
+// NCalc formula: ';'+[Rpms]+':'+[SpeedMph]+':'+[OilTemperature]+':'+[Gear]+':'+[TurnIndicatorLeft]+':'+[TurnIndicatorRight]+':'+[Handbrake]+':'+[ABSActive]+':'+[CarDamagesAvg]+':'
+// example serial output from Simhub to Arduino (without the parenthesis): ";834:0:180:N:0:0:100:0:0:"
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // Imports:
@@ -89,7 +89,7 @@ int speed = 0;
 int temp = 100; // Temperature values: (100-200) the formula from celcious is: TEMP+90 the formula for fahrenheit is: TEMP-50
 int fuel = 0;
 String gear = "P";
-String Telem; // dummy vaiable to capture beginning serial Lcalc message from simhub
+int Telem; // dummy vaiable to capture beginning serial Lcalc message from simhub
 
 // Custom variable definitions:
 int rpmgate = 96; // <- rpm gate for ford rpm (96-115)
@@ -123,18 +123,18 @@ void loop() {
   while(Serial.available() > 0) {
     // Example data to send: Telem:734:0:180:N:0:0:100:0:0
   
-    Telem = Serial.readStringUntil(':');
+    Serial.readStringUntil(';').toInt();
     rpm = Serial.readStringUntil(':').toInt();
     speed = Serial.readStringUntil(':').toInt();
-    temp = Serial.readStringUntil(':').toInt() - 50;
+    temp = Serial.readStringUntil(':').toInt();
     gear = Serial.readStringUntil(':');
     turnL = Serial.readStringUntil(':').toInt();
     turnR = Serial.readStringUntil(':').toInt();
     parkingbrake = Serial.readStringUntil(':').toInt();
     ABSwarn = Serial.readStringUntil(':').toInt();
-    //TCSwarn = Serial.readStringUntil(':').toInt();
+    TCSwarn = Serial.readStringUntil(':').toInt();
     //TirePwarn = Serial.readStringUntil(':').toInt();
-    //CELwarn = Serial.readStringUntil(':').toInt();
+    CELwarn = Serial.readStringUntil(':').toInt();
     
     rpmgate = 96 + (int)(rpm / 500); // Calculate the gate and cast to int
     finetune = (int)(rpm%500)/2;
@@ -143,6 +143,8 @@ void loop() {
     } 
     
     speedL = lo8(speed*.625); // lower bits used for speed in MPH
+    //speedH = hi8(speed*.625);
+
 
     // clear warning lights
     PB_WARN = 0x00;
@@ -192,7 +194,7 @@ void loop() {
   opSend(0x466, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 
   //Coolant
-  opSend(0x156, temp, 0x00, 0x00, 0x00, 0x23, 0x00, 0x00, 0x00);
+  opSend(0x156, (temp - 50), 0x00, 0x00, 0x00, 0x23, 0x00, 0x00, 0x00);
 
   //Power Steering
   opSend(0x877, 0x23, 0x23, 0x23, 0x23, 0x23, 0x23, 0x00, 0x00);
@@ -224,7 +226,7 @@ void loop() {
   // Speedometer
   //distance += speed*1.12;
   //if(distance > speed*1.12) distance = 0;
-  opSend(0x202, 0x40, 0x00, 0x00, 115, 115,  speedH, speedL, 0x00);  //opSend(0x202, 0x40, 0x00, 0x00, distance, distance, 0x00, speedL, 0x00);
+  opSend(0x202, 0x40, 0x00, 0x00, 115, 115,  speedL, speedL, 0x00);  //opSend(0x202, 0x40, 0x00, 0x00, distance, distance, 0x00, speedL, 0x00);
 
   // Gears
   if(gear.equalsIgnoreCase("P")) {

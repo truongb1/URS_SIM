@@ -1,0 +1,1 @@
+NCalc formula: ';'+[Rpms]+':'+[SpeedMph]+':'+[OilTemperature]+':'+[Gear]+':'+[TurnIndicatorLeft]+':'+[TurnIndicatorRight]+':'+[Handbrake]+':'+[ABSActive]+':'+[TCActive]+':'+[CarDamagesAvg]+':'
