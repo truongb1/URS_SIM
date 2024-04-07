@@ -1,7 +1,7 @@
 # Made by: Bao Truong
 # Last edit: 4/3/2024
 # Comments: working
-# Purpose: highway driving with no traffic, allow for free driving, mutiple lanes
+# Purpose: rural driving with no traffic, allow for free driving, 2 lanes
 
 from beamngpy import BeamNGpy, Scenario, ScenarioObject, Vehicle
 from beamngpy.misc.colors import coerce_color
@@ -24,7 +24,7 @@ bng.settings.change('spawnVehicleIgnitionLevel', 0)  # start engine off
 bng.settings.apply_graphics()
 
 # Create a scenario
-scenario = Scenario('west_coast_usa', 'highway notraffic', description="Learn driving on highway with no traffic")
+scenario = Scenario('east_coast_usa', 'sub notraffic', description="Learn driving on suburb/rural with no traffic, reverse out of parking")
 
 # Create a driver car and set all initial parameters,
 set_pcolor = (89/255, 203/255, 232/255) # color value is divided by 255
@@ -32,9 +32,9 @@ primary_color = coerce_color(set_pcolor, alpha=0)
 vehicle = Vehicle('ego_vehicle', model='bastion', license='URS SIM', color=primary_color) # you can change car here
 
 # Add it to our scenario at this position and rotations
-car_angle = tuple((0, 0, -135.678))
+car_angle = tuple((0, 0, 37.000))
 car_rot = angle_to_quat(car_angle)
-scenario.add_vehicle(vehicle, pos=(-942.868, -608.800, 106.456), rot_quat=car_rot)
+scenario.add_vehicle(vehicle, pos=(-770.751, 474.174, 23.885), rot_quat=car_rot)
 
 # Place files defining our scenario for the simulator to read
 scenario.make(bng)

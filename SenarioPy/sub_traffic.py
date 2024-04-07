@@ -1,12 +1,13 @@
 # Made by: Bao Truong
 # Last edit: 4/3/2024
-# Comments: working
-# Purpose: highway driving with no traffic, allow for free driving, mutiple lanes
+# Comments: working, recommend only official map should have ai traffic, change car ammount if needed
+# Purpose: rural driving with traffic, allow for free driving, 2 lanes
 
 from beamngpy import BeamNGpy, Scenario, ScenarioObject, Vehicle
 from beamngpy.misc.colors import coerce_color
 from beamngpy.misc.quat import angle_to_quat
 from beamngpy.types import Float3
+from beamngpy.api.beamng import TrafficApi
 import math
 import keyboard
 
@@ -24,7 +25,7 @@ bng.settings.change('spawnVehicleIgnitionLevel', 0)  # start engine off
 bng.settings.apply_graphics()
 
 # Create a scenario
-scenario = Scenario('west_coast_usa', 'highway notraffic', description="Learn driving on highway with no traffic")
+scenario = Scenario('east_coast_usa', 'sub notraffic', description="Learn driving on suburb/rural with no traffic, reverse out of parking")
 
 # Create a driver car and set all initial parameters,
 set_pcolor = (89/255, 203/255, 232/255) # color value is divided by 255
@@ -32,9 +33,9 @@ primary_color = coerce_color(set_pcolor, alpha=0)
 vehicle = Vehicle('ego_vehicle', model='bastion', license='URS SIM', color=primary_color) # you can change car here
 
 # Add it to our scenario at this position and rotations
-car_angle = tuple((0, 0, -135.678))
+car_angle = tuple((0, 0, 37.000))
 car_rot = angle_to_quat(car_angle)
-scenario.add_vehicle(vehicle, pos=(-942.868, -608.800, 106.456), rot_quat=car_rot)
+scenario.add_vehicle(vehicle, pos=(-770.751, 474.174, 23.885), rot_quat=car_rot)
 
 # Place files defining our scenario for the simulator to read
 scenario.make(bng)
@@ -43,6 +44,18 @@ scenario.make(bng)
 bng.scenario.load(scenario)
 bng.scenario.start()
 
+# Create TrafficApi instance
+traffic_api = TrafficApi(bng)
+
+# Spawn vehicles using TrafficApi
+traffic_api.spawn(max_amount=10, police_ratio=0, extra_amount=5, parked_amount=3)
+
+# reset traffic function
+def traffic_reset(event):
+    if event.name == 'r':
+        print("R key pressed! traffic reset")
+        traffic_api.reset()
+
 # quit sim funtion
 def sim_quit(event):
     if event.name == 'end':
@@ -50,6 +63,7 @@ def sim_quit(event):
         bng.close()
 
 # Register the callback function
+keyboard.on_press(traffic_reset)
 keyboard.on_press(sim_quit)
 
 # Keep the script running

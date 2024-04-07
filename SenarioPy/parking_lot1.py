@@ -9,6 +9,7 @@ from beamngpy.misc.quat import angle_to_quat
 from beamngpy.types import Float3
 from beamngpy.api.beamng import UiApi
 import math
+import keyboard
 
 # Instantiate BeamNGpy instance running the simulator from the given path,
 # communicating over localhost:64256
@@ -23,8 +24,8 @@ bng.settings.change('defaultGearboxBehavior', 'realistic')
 bng.settings.change('spawnVehicleIgnitionLevel', 0)  # start engine off
 bng.settings.apply_graphics()
 
-# Create a scenario in west_coast_usa called 'example'
-scenario = Scenario('LosInjurus', 'OHIO and Parallel Parking', description="Learn parallel parking and 9x20 cone test ")
+# Create a scenario
+scenario = Scenario('LosInjurus', 'Parallel Parking', description="Learn parallel parking both direction, and 9x20 OHIO 5 cone test ")
 
 # Create a driver car and set all initial parameters,
 set_pcolor = (89/255, 203/255, 232/255) # color value is divided by 255
@@ -118,6 +119,18 @@ scenario.make(bng)
 bng.scenario.load(scenario)
 bng.scenario.start()
 
+# quit sim funtion
+def sim_quit(event):
+    if event.name == 'end':
+        print("End key pressed! quitting sim")
+        bng.close()
+
+# Register the callback function
+keyboard.on_press(sim_quit)
+
+# Keep the script running
+keyboard.wait('caps lock')
+
 # Place files defining our scenario for the simulator to read
 scenario.make(bng)
 
@@ -125,24 +138,3 @@ scenario.make(bng)
 bng.scenario.load(scenario)
 bng.scenario.start()
 
-# Commenting out the block starting from TrafficApi creation
-'''
-# Create TrafficApi instance
-traffic_api = TrafficApi(bng)
-
-# Spawn vehicles using TrafficApi
-traffic_api.spawn(max_amount=10, police_ratio=0, extra_amount=5, parked_amount=2)
-
-# Export OpenStreetMap (.osm).
-OpenStreetMapExporter.export(r'C:\\Users\\URS\\Desktop\\OSM\\test2_osm', bng)
-print("Current Vehicle Configuration:")
-print(vehicle.get_part_config())
-
-print("\nPossible Part Options:")
-print(vehicle.get_part_options())
-
-# Make the vehicle's AI span the map
-# vehicle.ai.set_mode('span')
-# input('Hit enter when done...')
-input('press \'Enter\' to exit demo')
-'''
