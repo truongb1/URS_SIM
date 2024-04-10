@@ -15,7 +15,7 @@ import keyboard
 # communicating over localhost:64256
 bng = BeamNGpy('localhost', 64256, home=r'C:\Users\URS\Desktop\BeamNG.tech.v0.31.3.0')
 # Launch BeamNG.tech
-bng.open()
+bng.open(opts="console")
 
 # Change Default setting
 bng.settings.change('GraphicDisplayResolutions', '3440 1440')  # change this to match monitor, full rez = '3440 1440'
@@ -112,6 +112,7 @@ scenario.add_vehicle(vehicle, pos=(6378.722, 1561.5, 337.209), rot_quat=rot_left
 
 vehicle = Vehicle('p_vehicle4', model='etk800', color=safe_color, license='URS')
 scenario.add_vehicle(vehicle, pos=(6390.734, 1561.5, 337.209), rot_quat=rot_left , cling=True)
+
 # Place files defining our scenario for the simulator to read
 scenario.make(bng)
 
@@ -119,7 +120,7 @@ scenario.make(bng)
 bng.scenario.load(scenario)
 bng.scenario.start()
 
-# quit sim funtion
+# quit sim function
 def sim_quit(event):
     if event.name == 'end':
         print("End key pressed! quitting sim")
@@ -130,11 +131,3 @@ keyboard.on_press(sim_quit)
 
 # Keep the script running
 keyboard.wait('caps lock')
-
-# Place files defining our scenario for the simulator to read
-scenario.make(bng)
-
-# Load and start our scenario
-bng.scenario.load(scenario)
-bng.scenario.start()
-

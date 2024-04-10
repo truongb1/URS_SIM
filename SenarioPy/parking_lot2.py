@@ -99,7 +99,14 @@ scenario.add_vehicle(vehicle, pos=(6381.097, 1504.042, 337.257), rot_quat=rot_ba
 vehicle = Vehicle('p_v16', model='etk800', color=safe_color, license='URS')
 scenario.add_vehicle(vehicle, pos=(6378.597, 1504.042, 337.257), rot_quat=rot_back, cling=True)
 
-# quit sim funtion
+# Place files defining our scenario for the simulator to read
+scenario.make(bng)
+
+# Load and start our scenario
+bng.scenario.load(scenario)
+bng.scenario.start()
+
+# quit sim function
 def sim_quit(event):
     if event.name == 'end':
         print("End key pressed! quitting sim")
@@ -110,12 +117,3 @@ keyboard.on_press(sim_quit)
 
 # Keep the script running
 keyboard.wait('caps lock')
-
-# Place files defining our scenario for the simulator to read
-scenario.make(bng)
-
-# Load and start our scenario
-bng.scenario.load(scenario)
-bng.scenario.start()
-
-
