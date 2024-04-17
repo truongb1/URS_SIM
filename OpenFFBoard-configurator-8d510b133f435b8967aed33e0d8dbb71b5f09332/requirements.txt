@@ -1,0 +1,8 @@
+PyQt6
+PyQt6-Qt6
+PyQt6-Charts
+PyQt6-Charts-Qt6
+PyQt6-sip
+pyusb
+intelhex
+requests
