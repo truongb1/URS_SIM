@@ -1,6 +1,7 @@
 # Made by: Bao Truong
 # Last edit: 3/22/2024
-# Comments: working
+# Comments: working, [end] exit sometime work
+
 # Purpose: OHIO mav test and parrellel parking senario
 
 from beamngpy import BeamNGpy, Scenario, ScenarioObject, Vehicle
@@ -10,6 +11,7 @@ from beamngpy.types import Float3
 from beamngpy.api.beamng import UiApi
 import math
 import keyboard
+import json
 
 # Instantiate BeamNGpy instance running the simulator from the given path,
 # communicating over localhost:64256
@@ -30,10 +32,10 @@ scenario = Scenario('LosInjurus', 'Parallel Parking', description="Learn paralle
 # Create a driver car and set all initial parameters,
 set_pcolor = (89/255, 203/255, 232/255) # color value is divided by 255
 primary_color = coerce_color(set_pcolor, alpha=0)
-vehicle = Vehicle('ego_vehicle', model='bastion', license='URS SIM', color=primary_color) # you can change car here
+main_vehicle = Vehicle('ego_vehicle', model='bastion', license='URS SIM', color=primary_color) # you can change car here
 
 # Add it to our scenario at this position and rotations
-scenario.add_vehicle(vehicle, pos=(6346.014, 1509.513, 337.037), rot_quat=(0, 0, -180, 1))
+scenario.add_vehicle(main_vehicle, pos=(6346.014, 1509.513, 337.037), rot_quat=(0, 0, -180, 1))
 
 # ----- OHIO Maneuverability Test = 9 ft WIDE x 40/2 ft LONG, with tube object -----
 # Create the first tube, back left
@@ -119,6 +121,16 @@ scenario.make(bng)
 # Load and start our scenario
 bng.scenario.load(scenario)
 bng.scenario.start()
+
+# Car config from .pc file, this give it adaptive power steering
+def parse_pc_file(pc_file_path):
+    with open(pc_file_path, 'r') as file:
+        pc_data = json.load(file)  # Assuming the .pc file is in JSON format
+    return pc_data
+
+pc_file_path = r'C:\Users\URS\AppData\Local\BeamNG.drive\0.31\vehicles\bastion\URS.pc'
+pc_data = parse_pc_file(pc_file_path)
+main_vehicle.set_part_config(pc_data)
 
 # quit sim function
 def sim_quit(event):

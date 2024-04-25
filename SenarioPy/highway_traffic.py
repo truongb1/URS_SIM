@@ -10,6 +10,7 @@ from beamngpy.types import Float3
 from beamngpy.api.beamng import TrafficApi
 import math
 import keyboard
+import json
 
 # Instantiate BeamNGpy instance running the simulator from the given path,
 # communicating over localhost:64256
@@ -43,6 +44,16 @@ scenario.make(bng)
 # Load and start our scenario
 bng.scenario.load(scenario)
 bng.scenario.start()
+
+# Car config from .pc file, this give it adaptive power steering
+def parse_pc_file(pc_file_path):
+    with open(pc_file_path, 'r') as file:
+        pc_data = json.load(file)  # Assuming the .pc file is in JSON format
+    return pc_data
+
+pc_file_path = r'C:\Users\URS\AppData\Local\BeamNG.drive\0.31\vehicles\bastion\URS.pc'
+pc_data = parse_pc_file(pc_file_path)
+vehicle.set_part_config(pc_data)
 
 # Create TrafficApi instance
 traffic_api = TrafficApi(bng)
